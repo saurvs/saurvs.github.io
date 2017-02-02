@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Post-rsses on Saurav Sachidanand</title>
+    <link>https://saurvs.github.io/post/index.xml</link>
+    <description>Recent content in Post-rsses on Saurav Sachidanand</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <managingEditor>sauravsachidanand@gmail.com (Saurav Sachidanand)</managingEditor>
+    <webMaster>sauravsachidanand@gmail.com (Saurav Sachidanand)</webMaster>
+    <lastBuildDate>Thu, 02 Feb 2017 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://saurvs.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Writing a NetBSD kernel module</title>
+      <link>https://saurvs.github.io/post/writing-netbsd-kern-mod/</link>
+      <pubDate>Thu, 02 Feb 2017 00:00:00 +0000</pubDate>
+      <author>sauravsachidanand@gmail.com (Saurav Sachidanand)</author>
+      <guid>https://saurvs.github.io/post/writing-netbsd-kern-mod/</guid>
+      <description>&lt;p&gt;The kernel module subsystem, present in most modern operating systems, is a
+tool a programmer can use to extend the kernel through pluggable subsystems
+like device drivers or filesystems or internal kernel API, all at &lt;em&gt;run time&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this post, we’ll look at implementing a simple character device driver in
+NetBSD, and load  it into the kernel as a module.
+Userspace processes will be able to &lt;code&gt;write&lt;/code&gt; an arbitrary byte string to
+the device,
+and on every successive &lt;code&gt;read&lt;/code&gt; expect a cryptographically-secure pseudorandom permutation of
+the original byte string.&lt;/p&gt;
+
+&lt;p&gt;Before we begin, compiling a kernel module requires the NetBSD source code to live in &lt;code&gt;/usr/src&lt;/code&gt;.
+&lt;a href=&#34;https://www.netbsd.org/docs/guide/en/chap-fetch.html&#34;&gt;This&lt;/a&gt; explains how to
+get that.&lt;/p&gt;
+
+&lt;p&gt;Usually, most userspace interfaces to character or block devices are through
+special files that live in &lt;code&gt;/dev&lt;/code&gt;. We&amp;rsquo;ll create one such special file through
+the command&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;$ mknod /dev/rperm c 420 0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;c&lt;/code&gt; indicates that this file is an interface
+to a character device, &lt;code&gt;420&lt;/code&gt; indicates this device&amp;rsquo;s &lt;em&gt;major number&lt;/em&gt;, and &lt;code&gt;0&lt;/code&gt;
+indicates this device&amp;rsquo;s &lt;em&gt;minor number&lt;/em&gt;. The major number is used by the kernel
+to uniquely identify each device, and the minor number is usually used
+internally by device drivers but we won&amp;rsquo;t be bothering with it.&lt;/p&gt;
+
+&lt;p&gt;Our device driver will specifically implement the &lt;code&gt;open&lt;/code&gt;, &lt;code&gt;read&lt;/code&gt;, &lt;code&gt;write&lt;/code&gt;, and &lt;code&gt;close&lt;/code&gt; I/O methods. To
+register our implementations of those methods with the kernel, we first
+prototype them in way that makes the compiler happy using the
+&lt;code&gt;dev_type_*&lt;/code&gt; set of macros, and then put them into a &lt;code&gt;struct cdevsw&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;dev_type_open(rperm_open);
+dev_type_close(rperm_close);
+dev_type_write(rperm_write);
+dev_type_read(rperm_read);
+
+static struct cdevsw rperm_cdevsw = {
+    .d_open = rperm_open,
+    .d_close = rperm_close,
+    .d_read = rperm_read,
+    .d_write = rperm_write,
+
+    .d_ioctl = noioctl,
+    .d_stop = nostop,
+    .d_tty = notty,
+    .d_poll = nopoll,
+    .d_mmap = nommap,
+    .d_kqfilter = nokqfilter,
+    .d_discard = nodiscard,
+    .d_flag = D_OTHER
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As we can see, there are plenty of functions we won&amp;rsquo;t be implementing.
+&lt;code&gt;devsw&lt;/code&gt; stands for &lt;em&gt;device switch&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Every kernel module is required to define it&amp;rsquo;s metadata through the C macro
+&lt;code&gt;MODULE(class, name, required)&lt;/code&gt;. Since our module is a device driver, named
+&lt;code&gt;rperm&lt;/code&gt;, and won&amp;rsquo;t require another module being pre-loaded, we write&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;MODULE(MODULE_CLASS_DRIVER, rperm, NULL);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Every module is also required to implement a &lt;code&gt;MODNAME_modcmd&lt;/code&gt; function, which the kernel
+calls to report important module-related events, like when the module loads
+or unloads. This is where we&amp;rsquo;ll register our &lt;code&gt;struct cdevsw&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;#define CMAJOR 420
+
+static int
+rperm_modcmd(modcmd_t cmd, void *args)
+{
+    devmajor_t bmajor, cmajor;
+
+    bmajor = -1;
+    cmajor = CMAJOR;
+    switch(cmd) {
+        case MODULE_CMD_INIT:
+            devsw_attach(&amp;quot;rperm&amp;quot;, NULL, &amp;amp;bmajor, &amp;amp;rperm_cdevsw, &amp;amp;cmajor);
+	    break;
+        case MODULE_CMD_FINI:
+            devsw_detach(NULL, &amp;amp;rperm_cdevsw);
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;NULL&lt;/code&gt; argument to the &lt;code&gt;devsw_*&lt;/code&gt; functions is for a block device switch structure,
+which we aren&amp;rsquo;t bothered with. Similarly for &lt;code&gt;bmajor&lt;/code&gt;, but the kernel ends up
+assigning an unused block device number for our driver anyway.&lt;/p&gt;
+
+&lt;p&gt;Now we turn to actually implementing the four device I/O methods.&lt;/p&gt;
+
+&lt;p&gt;On every &lt;code&gt;write&lt;/code&gt;, we need to store the byte string somewhere. We use a static
+structure for that.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;static struct rperm_softc {
+    char *buf;
+    int buf_len;
+} sc;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;sc.buf&lt;/code&gt; will end up pointing to a location in the kernel&amp;rsquo;s heap that contains
+the byte string. &lt;code&gt;sc&lt;/code&gt; and &lt;code&gt;softc&lt;/code&gt; stand for software context,
+which is just a convention followed in the NetBSD kernel for naming static structures in
+device driver code.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;open&lt;/code&gt; is a &lt;em&gt;required&lt;/em&gt; implementation, as it is always the first
+syscall in Unix I/O. But, there is nothing meaningful for us to do there, so we
+simply write a stub.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;int
+rperm_open(dev_t self, int flag, int mod, struct lwp *l)
+{
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In &lt;code&gt;write&lt;/code&gt;, we allocate enough memory in the kernel&amp;rsquo;s heap to store the
+byte string, and then transfer the byte string from userspace to kernelspace.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;int
+rperm_write(dev_t self, struct uio *uio, int flags)
+{
+    if (sc.buf)
+	kmem_free(sc.buf, sc.buf_len);
+    sc.buf_len = uio-&amp;gt;uio_iov-&amp;gt;iov_len;
+    sc.buf = (char *)kmem_alloc(sc.buf_len, KM_SLEEP);
+    uiomove(sc.buf, sc.buf_len, uio);
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;First, let&amp;rsquo;s discuss the allocations.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;kmem_alloc&lt;/code&gt; is similar to userspace &lt;code&gt;malloc&lt;/code&gt;,
+in that it allocates some number of bytes of memory in the heap. Interestingly, this memory
+is &lt;em&gt;wired&lt;/em&gt;, which means that during physical memory pressure, it is &lt;em&gt;not&lt;/em&gt; paged
+out to a swap disk like userspace memory is. The &lt;code&gt;KM_SLEEP&lt;/code&gt; flag to &lt;code&gt;kmem_alloc&lt;/code&gt; tells the kernel that
+the current kernel thread should sleep until enough physical memory is avaiable for the request, if it
+already isn&amp;rsquo;t, as opposed to &lt;code&gt;kmem_alloc&lt;/code&gt; simply returning &lt;code&gt;NULL&lt;/code&gt; in such a situation. Hence,
+our allocation request never fails, and we don&amp;rsquo;t have to test for &lt;code&gt;sc.buf == NULL&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;kmem_free&lt;/code&gt; is similar to userspace &lt;code&gt;free&lt;/code&gt;, except for a second argument that has to be the number of bytes allocated using &lt;code&gt;kmem_alloc&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Next, we come to the transfer of the byte string from userspace to kernelspace.
+Generally, memory to be transfered, in either direction, comes in one or more
+non-contiguous chunks of memory (think scatter-gather I/O) along with some additional
+state variables like the amount of data remaining to be transfered in the current
+session, an offset into a block device, and some flags. All that information
+is encapulated in a &lt;code&gt;struct uio&lt;/code&gt; data type. And &lt;code&gt;uiomove&lt;/code&gt; performs the actual transfer
+by using that information. For example, here &lt;code&gt;uio-&amp;gt;uio_rw&lt;/code&gt; is set to &lt;code&gt;UIO_WRITE&lt;/code&gt;,
+telling &lt;code&gt;uiomove&lt;/code&gt; that data
+from &lt;code&gt;uio&lt;/code&gt; should be transfered to &lt;code&gt;sc.buf&lt;/code&gt;. &lt;code&gt;uiomove&lt;/code&gt; also ends up updating
+&lt;code&gt;uio-&amp;gt;uio_resid&lt;/code&gt;, which is the total number of bytes left to transfer to &lt;code&gt;uio&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Next we come to &lt;code&gt;read&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;int
+rperm_read(dev_t self, struct uio *uio, int flags)
+{
+    if (sc.buf == NULL || uio-&amp;gt;uio_resid &amp;lt; sc.buf_len)
+	return EINVAL;
+
+    char c;
+    uint32_t i, n, r;
+
+    for (i = 0; i &amp;lt; sc.buf_len-1; i++) {
+	r = rand_n(i, sc.buf_len);
+	c = sc.buf[r];
+	sc.buf[r] = sc.buf[i];
+	sc.buf[i] = c;
+    }
+    uiomove(sc.buf, sc.buf_len, uio);
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We first check if there is enough space in &lt;code&gt;uio&lt;/code&gt; to transfer a permuted byte
+string, then use the &lt;a href=&#34;https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle&#34;&gt;Fisher–Yates shuffle&lt;/a&gt;
+to permute the original byte string using a random number generated by &lt;code&gt;rand_n&lt;/code&gt;,
+and then copy the permuted string back to userspace. In this case, &lt;code&gt;uio-&amp;gt;uio_rw&lt;/code&gt;
+would be set to &lt;code&gt;UIO_READ&lt;/code&gt;, telling &lt;code&gt;uiomove&lt;/code&gt; that data
+from &lt;code&gt;sc.buf&lt;/code&gt; should be transfered to &lt;code&gt;uio&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;rand_n&lt;/code&gt; function, which we need to implement, returns a random integer &lt;code&gt;n&lt;/code&gt; uniformly distributed
+over the range &lt;code&gt;[low, high)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;#define R32MAX 4294967295
+
+uint32_t rand_n(uint32_t low, uint32_t high) {
+    uint32_t limit, diff, r;
+
+    diff = high - low;
+    limit = diff * (R32MAX/diff);
+    do {
+	r = cprng_strong32();
+    } while (r &amp;gt; limit);
+    return (r % diff) + low;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For a source of randomness, we use &lt;code&gt;cprng_strong32&lt;/code&gt;. The &lt;code&gt;cprng_*&lt;/code&gt; family of
+functions supply cryptographically secure pseudorandom
+bytes (in this case, &lt;code&gt;4&lt;/code&gt;) to callers within the kernel.&lt;/p&gt;
+
+&lt;p&gt;Once we have it, we transform the range of our random number from &lt;code&gt;[0, 2^32)&lt;/code&gt; to
+&lt;code&gt;[low, high)&lt;/code&gt; by an iterative test that discards those values of &lt;code&gt;r&lt;/code&gt; that are
+larger than the largest multiple of &lt;code&gt;r&lt;/code&gt; less than &lt;code&gt;2^32&lt;/code&gt;, as using those numbers
+would result in numbers in a certain subrange of &lt;code&gt;[low, high)&lt;/code&gt; being &lt;em&gt;more&lt;/em&gt;
+likely to occur than those not.&lt;/p&gt;
+
+&lt;p&gt;In &lt;code&gt;close&lt;/code&gt;, we free &lt;code&gt;sc.buf&lt;/code&gt; if it was allocated before.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;int
+rperm_close(dev_t self, int flag, int mod, struct lwp *l)
+{
+    if (sc.buf != NULL) {
+	kmem_free(sc.buf, sc.buf_len);
+	sc.buf = NULL;
+    }
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Lastly, we write a three line &lt;code&gt;Makefile&lt;/code&gt; to build our module.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Makefile&#34;&gt;KMOD=   rperm
+SRCS=   rperm.c
+
+.include &amp;lt;bsd.kmodule.mk&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we compile and load the module.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ make
+$ modload ./rperm.kmod
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;./&lt;/code&gt; &lt;em&gt;has&lt;/em&gt; to be present for &lt;code&gt;modload&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, we can&amp;rsquo;t simply do&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ echo &#39;bloop&#39; &amp;gt; /dev/rperm
+$ cat /dev/rperm
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;as that would end up copying the &lt;code&gt;\0&lt;/code&gt; along with the rest of the string into the driver, and the driver
+would end up shuffling the &lt;code&gt;\0&lt;/code&gt; as well, which we don&amp;rsquo;t want.&lt;/p&gt;
+
+&lt;p&gt;So we settle for a simple test program.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;#define BUF_LEN  80
+#define N_ITER   20
+
+int main() {
+    char buf[BUF_LEN] = &amp;quot;Hello NetBSD!&amp;quot;;
+    int i, fd, str_len;
+
+    str_len = strlen(buf);
+    fd = open(&amp;quot;/dev/rperm&amp;quot;, O_RDWR);
+    write(fd, buf, str_len);
+    for (i = 0; i &amp;lt; N_ITER; i++) {
+	read(fd, buf, BUF_LEN);
+	printf(&amp;quot;%s\n&amp;quot;, buf);
+    }
+    close(fd);
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-C&#34;&gt;$ ./test
+NDe eBlS!tHol
+Hl!elDSNeo Bt
+N!llD eSoHetB
+...
+tHelS!BlNeo D
+DBeSlt!HloNe
+llSetB!oeNHD
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;All of the above code is avaiable in it&amp;rsquo;s entirety on &lt;a href=&#34;https://github.com/saurvs/rperm-netbsd&#34;&gt;github&lt;/a&gt;.
+More examples of kernel modules can be found in the NetBSD source tree
+at &lt;code&gt;src/sys/modules/examples/&lt;/code&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
