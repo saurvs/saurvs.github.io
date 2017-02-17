@@ -23,13 +23,12 @@
             <div class="row">
                 <div class="six columns" style="margin-top: 25%;">
                     <h2>Writing a NetBSD kernel module</h2>
-                    <p>The kernel module subsystem, present in most modern operating systems, is a
-tool a programmer can use to extend the kernel through pluggable subsystems
-like device drivers or filesystems or internal kernel API, all at <em>run time</em>.</p>
+                    <p>Kernel modules are object files used to extend an operating system&rsquo;s
+kernel functionality at <em>run time</em>.</p>
 
-<p>In this post, we’ll look at implementing a simple character device driver in
-NetBSD, and load  it into the kernel as a module.
-Userspace processes will be able to <code>write</code> an arbitrary byte string to
+<p>In this post, we’ll look at implementing a simple character device driver as a
+kernel module in NetBSD.
+Once it is loaded, userspace processes will be able to <code>write</code> an arbitrary byte string to
 the device,
 and on every successive <code>read</code> expect a cryptographically-secure pseudorandom permutation of
 the original byte string.</p>
@@ -309,7 +308,7 @@ DBeSlt!HloNe
 llSetB!oeNHD
 </code></pre>
 
-<p>All of the above code is avaiable in it&rsquo;s entirety on <a href="https://github.com/saurvs/rperm-netbsd">github</a>.
+<p>All of the above code is available in it&rsquo;s entirety on <a href="https://github.com/saurvs/rperm-netbsd">github</a>.
 More examples of kernel modules can be found in the NetBSD source tree
 at <code>src/sys/modules/examples/</code>.</p>
 

@@ -17,13 +17,12 @@
       <pubDate>Thu, 02 Feb 2017 00:00:00 +0000</pubDate>
       <author>sauravsachidanand@gmail.com (Saurav Sachidanand)</author>
       <guid>https://saurvs.github.io/post/writing-netbsd-kern-mod/</guid>
-      <description>&lt;p&gt;The kernel module subsystem, present in most modern operating systems, is a
-tool a programmer can use to extend the kernel through pluggable subsystems
-like device drivers or filesystems or internal kernel API, all at &lt;em&gt;run time&lt;/em&gt;.&lt;/p&gt;
+      <description>&lt;p&gt;Kernel modules are object files used to extend an operating system&amp;rsquo;s
+kernel functionality at &lt;em&gt;run time&lt;/em&gt;.&lt;/p&gt;
 
-&lt;p&gt;In this post, we’ll look at implementing a simple character device driver in
-NetBSD, and load  it into the kernel as a module.
-Userspace processes will be able to &lt;code&gt;write&lt;/code&gt; an arbitrary byte string to
+&lt;p&gt;In this post, we’ll look at implementing a simple character device driver as a
+kernel module in NetBSD.
+Once it is loaded, userspace processes will be able to &lt;code&gt;write&lt;/code&gt; an arbitrary byte string to
 the device,
 and on every successive &lt;code&gt;read&lt;/code&gt; expect a cryptographically-secure pseudorandom permutation of
 the original byte string.&lt;/p&gt;
@@ -303,7 +302,7 @@ DBeSlt!HloNe
 llSetB!oeNHD
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;All of the above code is avaiable in it&amp;rsquo;s entirety on &lt;a href=&#34;https://github.com/saurvs/rperm-netbsd&#34;&gt;github&lt;/a&gt;.
+&lt;p&gt;All of the above code is available in it&amp;rsquo;s entirety on &lt;a href=&#34;https://github.com/saurvs/rperm-netbsd&#34;&gt;github&lt;/a&gt;.
 More examples of kernel modules can be found in the NetBSD source tree
 at &lt;code&gt;src/sys/modules/examples/&lt;/code&gt;.&lt;/p&gt;
 </description>
