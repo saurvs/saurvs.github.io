@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>Saurav Sachidanand</title>
-		<link>https://saurvs.github.io/</link>
+		<link>https://sauravsc.github.io/</link>
 		<description>Recent content on Saurav Sachidanand</description>
 		<generator>Hugo</generator>
 		<language>en-US</language>
@@ -16,19 +16,19 @@
 		
 			<lastBuildDate>Thu, 02 Feb 2017 00:00:00 +0000</lastBuildDate>
 		
-			<atom:link href="https://saurvs.github.io/index.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="https://sauravsc.github.io/index.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>Writing a NetBSD kernel module</title>
-				<link>https://saurvs.github.io/post/writing-netbsd-kern-mod/</link>
+				<link>https://sauravsc.github.io/post/writing-netbsd-kern-mod/</link>
 				<pubDate>Thu, 02 Feb 2017 00:00:00 +0000</pubDate><author>sauravsachidanand@gmail.com (Saurav Sachidanand)</author>
-				<guid>https://saurvs.github.io/post/writing-netbsd-kern-mod/</guid>
+				<guid>https://sauravsc.github.io/post/writing-netbsd-kern-mod/</guid>
 				<description>&lt;p&gt;Kernel modules are object files used to extend an operating system&amp;rsquo;s&#xA;kernel functionality at &lt;em&gt;run time&lt;/em&gt;.&lt;/p&gt;&#xA;&lt;p&gt;In this post, we’ll look at implementing a simple character device driver as a&#xA;kernel module in NetBSD.&#xA;Once it is loaded, userspace processes will be able to &lt;code&gt;write&lt;/code&gt; an arbitrary byte string to&#xA;the device,&#xA;and on every successive &lt;code&gt;read&lt;/code&gt; expect a cryptographically-secure pseudorandom permutation of&#xA;the original byte string.&lt;/p&gt;&#xA;&lt;p&gt;Before we begin, compiling a kernel module requires the NetBSD source code to live in &lt;code&gt;/usr/src&lt;/code&gt;.&#xA;&lt;a href=&#34;https://www.netbsd.org/docs/guide/en/chap-fetch.html&#34;&gt;This&lt;/a&gt; explains how to&#xA;get that.&lt;/p&gt;</description>
 			</item>
 			<item>
 				<title>About</title>
-				<link>https://saurvs.github.io/page/about/</link>
+				<link>https://sauravsc.github.io/page/about/</link>
 				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>sauravsachidanand@gmail.com (Saurav Sachidanand)</author>
-				<guid>https://saurvs.github.io/page/about/</guid>
+				<guid>https://sauravsc.github.io/page/about/</guid>
 				<description>&lt;p&gt;I&amp;rsquo;m a computer science undergrad currently living in Bangalore, and teaching myself&#xA;to be a better software engineer.&lt;/p&gt;</description>
 			</item>
 	</channel>
