@@ -1,0 +1,51 @@
+name: CI
+
+# Builds the Hugo source on the `hugo` branch. The generated site lives on
+# `master` and is published by GitHub Pages; see README.md.
+on:
+  push:
+    branches: [hugo]
+  pull_request:
+    branches: [hugo]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Install the latest Hugo
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          v=$(gh release view --repo gohugoio/hugo --json tagName --jq .tagName)
+          v=${v#v}
+          base="https://github.com/gohugoio/hugo/releases/download/v${v}"
+          tarball="hugo_${v}_linux-amd64.tar.gz"
+          cd "$RUNNER_TEMP"
+          curl -fsSLO "$base/$tarball"
+          curl -fsSL "$base/hugo_${v}_checksums.txt" | grep " ${tarball}\$" | sha256sum -c -
+          tar -xzf "$tarball" hugo
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+
+      - name: Build (fail on warnings and deprecations)
+        run: |
+          set -euo pipefail
+          hugo version
+          hugo --panicOnWarning --printPathWarnings --logLevel info \
+            --destination "$RUNNER_TEMP/public" 2>&1 | tee "$RUNNER_TEMP/build.log"
+          if grep -Ei 'deprecated|^WARN' "$RUNNER_TEMP/build.log"; then
+            echo "::error::Hugo reported warnings or deprecations"
+            exit 1
+          fi
+          test -s "$RUNNER_TEMP/public/index.html"
+          test -s "$RUNNER_TEMP/public/post/writing-netbsd-kern-mod/index.html"
+          test -s "$RUNNER_TEMP/public/page/about/index.html"
+          test -s "$RUNNER_TEMP/public/page/1/index.html"
