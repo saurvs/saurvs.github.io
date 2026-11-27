@@ -14,9 +14,9 @@ I\'m a computer science undergrad from Bangalore. I\'m interested in operating s
 
 ## projects
 
-- [Stanford Pintos](https://github.com/saurvs/pintos) Implemented core operating system features that include priority thread scheduling with inversion w.r.t mutexes, advanced MLFQ scheduling, user processes with POSIX-like system calls, virtual memory with demand paging, page swapping using LRU-based eviction, and memory-mapped files.
-- [astro-rust](https://github.com/saurvs/astro-rust) Built a fairly vast library of astronomical algorithms in Rust. Wrote extensive tests and documentation. Starred 60+ times on Github.
-- [CBOR.jl](https://github.com/saurvs/CBOR.jl) Built a Julia serialisation library for the CBOR (binary JSON) format. Enabled encoding of user-defined types using Julia\'s reflection feature. Enabled encoding of indefinite length maps, strings, arrays using producer functions.
-- [proplib-lua](https://github.com/saurvs/proplib-lua) Built a Lua API to NetBSD\'s proplib for handling property lists
-- [hypervisor-rs](https://github.com/saurvs/hypervisor-rs) Built a Rust API to the OS X Hypervisor framework for hardware-accelerated virtualization
-- [nfd-rs](https://github.com/saurvs/nfd-rs) Built a Rust API to nativefiledialog for opening cross-platform file dialogs
+- [Stanford Pintos](https://github.com/sauravsc/pintos) Implemented core operating system features that include priority thread scheduling with inversion w.r.t mutexes, advanced MLFQ scheduling, user processes with POSIX-like system calls, virtual memory with demand paging, page swapping using LRU-based eviction, and memory-mapped files.
+- [astro-rust](https://github.com/sauravsc/astro-rust) Built a fairly vast library of astronomical algorithms in Rust. Wrote extensive tests and documentation. Starred 60+ times on Github.
+- [CBOR.jl](https://github.com/sauravsc/CBOR.jl) Built a Julia serialisation library for the CBOR (binary JSON) format. Enabled encoding of user-defined types using Julia\'s reflection feature. Enabled encoding of indefinite length maps, strings, arrays using producer functions.
+- [proplib-lua](https://github.com/sauravsc/proplib-lua) Built a Lua API to NetBSD\'s proplib for handling property lists
+- [hypervisor-rs](https://github.com/sauravsc/hypervisor-rs) Built a Rust API to the OS X Hypervisor framework for hardware-accelerated virtualization
+- [nfd-rs](https://github.com/sauravsc/nfd-rs) Built a Rust API to nativefiledialog for opening cross-platform file dialogs

@@ -304,6 +304,6 @@ DBeSlt!HloNe
 llSetB!oeNHD
 ```
 
-All of the above code is available in it's entirety on [github](https://github.com/saurvs/rperm-netbsd).
+All of the above code is available in it's entirety on [github](https://github.com/sauravsc/rperm-netbsd).
 More examples of kernel modules can be found in the NetBSD source tree
 at `src/sys/modules/examples/`.

@@ -1,15 +1,15 @@
-# saurvs.github.io (Hugo source)
+# sauravsc.github.io (Hugo source)
 
-This `hugo` branch is the source of https://saurvs.github.io/. The `master`
+This `hugo` branch is the source of https://sauravsc.github.io/. The `master`
 branch holds the generated site, which GitHub Pages serves as-is.
 
-The theme is [meh-theme](https://github.com/saurvs/meh-theme), a Git submodule
+The theme is [meh-theme](https://github.com/sauravsc/meh-theme), a Git submodule
 in `themes/meh-theme`. Hugo 0.158.0 or later is required.
 
 ## Build and publish
 
 ```sh
-git clone --branch hugo --recurse-submodules https://github.com/saurvs/saurvs.github.io.git site-src
+git clone --branch hugo --recurse-submodules https://github.com/sauravsc/sauravsc.github.io.git site-src
 cd site-src
 git worktree add ../site-master master
 
@@ -28,5 +28,5 @@ earlier theme), so their URLs keep working.
 
 - `content/_index.md`: the about, experience and projects sections of the home page.
 - `content/post/`: posts, listed under "writing" on the home page.
-- `content/page/about.md`: https://saurvs.github.io/page/about/
+- `content/page/about.md`: https://sauravsc.github.io/page/about/
 - `layouts/_markup/render-codeblock.html`: plain (unhighlighted) code blocks.

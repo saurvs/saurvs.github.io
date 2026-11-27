@@ -1,4 +1,4 @@
-baseurl = "https://saurvs.github.io/"
+baseurl = "https://sauravsc.github.io/"
 title = "Saurav Sachidanand"
 locale = "en-US"
 theme = "meh-theme"
@@ -23,7 +23,7 @@ disableKinds = ["taxonomy", "term"]
   [params.author]
     name = "Saurav Sachidanand"
     email = "sauravsachidanand@gmail.com"
-    github = "saurvs"
+    github = "sauravsc"
     linkedin = "in/saurvs"
 
 [[menu.main]]
