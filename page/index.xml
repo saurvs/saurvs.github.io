@@ -1,25 +1,26 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Page-rsses on Saurav Sachidanand</title>
-    <link>https://saurvs.github.io/page/index.xml</link>
-    <description>Recent content in Page-rsses on Saurav Sachidanand</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <managingEditor>sauravsachidanand@gmail.com (Saurav Sachidanand)</managingEditor>
-    <webMaster>sauravsachidanand@gmail.com (Saurav Sachidanand)</webMaster>
-    <atom:link href="https://saurvs.github.io/page/index.xml" rel="self" type="application/rss+xml" />
-    
-    <item>
-      <title>About</title>
-      <link>https://saurvs.github.io/page/about/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <author>sauravsachidanand@gmail.com (Saurav Sachidanand)</author>
-      <guid>https://saurvs.github.io/page/about/</guid>
-      <description>&lt;p&gt;I&amp;rsquo;m a computer science undergrad currently living in Bangalore, and teaching myself
-to be a better software engineer.&lt;/p&gt;
-</description>
-    </item>
-    
-  </channel>
+	<channel>
+		<title>Pages on Saurav Sachidanand</title>
+		<link>https://saurvs.github.io/page/</link>
+		<description>Recent content in Pages on Saurav Sachidanand</description>
+		<generator>Hugo</generator>
+		<language>en-US</language>
+		
+			<managingEditor>sauravsachidanand@gmail.com (Saurav Sachidanand)</managingEditor>
+		
+		
+			<webMaster>sauravsachidanand@gmail.com (Saurav Sachidanand)</webMaster>
+		
+		
+		
+			<atom:link href="https://saurvs.github.io/page/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>About</title>
+				<link>https://saurvs.github.io/page/about/</link>
+				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><author>sauravsachidanand@gmail.com (Saurav Sachidanand)</author>
+				<guid>https://saurvs.github.io/page/about/</guid>
+				<description>&lt;p&gt;I&amp;rsquo;m a computer science undergrad currently living in Bangalore, and teaching myself&#xA;to be a better software engineer.&lt;/p&gt;</description>
+			</item>
+	</channel>
 </rss>

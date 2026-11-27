@@ -1,28 +1,28 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Posts on Saurav Sachidanand</title>
-    <link>https://saurvs.github.io/post/</link>
-    <description>Recent content in Posts on Saurav Sachidanand</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <managingEditor>sauravsachidanand@gmail.com (Saurav Sachidanand)</managingEditor>
-    <webMaster>sauravsachidanand@gmail.com (Saurav Sachidanand)</webMaster>
-    <lastBuildDate>Thu, 02 Feb 2017 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://saurvs.github.io/post/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>Writing a NetBSD kernel module</title>
-      <link>https://saurvs.github.io/post/writing-netbsd-kern-mod/</link>
-      <pubDate>Thu, 02 Feb 2017 00:00:00 +0000</pubDate>
-      <author>sauravsachidanand@gmail.com (Saurav Sachidanand)</author>
-      <guid>https://saurvs.github.io/post/writing-netbsd-kern-mod/</guid>
-      <description>Kernel modules are object files used to extend an operating system&amp;rsquo;s kernel functionality at run time.
-In this post, we’ll look at implementing a simple character device driver as a kernel module in NetBSD. Once it is loaded, userspace processes will be able to write an arbitrary byte string to the device, and on every successive read expect a cryptographically-secure pseudorandom permutation of the original byte string.
-Before we begin, compiling a kernel module requires the NetBSD source code to live in /usr/src.</description>
-    </item>
-    
-  </channel>
+	<channel>
+		<title>Posts on Saurav Sachidanand</title>
+		<link>https://saurvs.github.io/post/</link>
+		<description>Recent content in Posts on Saurav Sachidanand</description>
+		<generator>Hugo</generator>
+		<language>en-US</language>
+		
+			<managingEditor>sauravsachidanand@gmail.com (Saurav Sachidanand)</managingEditor>
+		
+		
+			<webMaster>sauravsachidanand@gmail.com (Saurav Sachidanand)</webMaster>
+		
+		
+		
+			<lastBuildDate>Thu, 02 Feb 2017 00:00:00 +0000</lastBuildDate>
+		
+			<atom:link href="https://saurvs.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Writing a NetBSD kernel module</title>
+				<link>https://saurvs.github.io/post/writing-netbsd-kern-mod/</link>
+				<pubDate>Thu, 02 Feb 2017 00:00:00 +0000</pubDate><author>sauravsachidanand@gmail.com (Saurav Sachidanand)</author>
+				<guid>https://saurvs.github.io/post/writing-netbsd-kern-mod/</guid>
+				<description>&lt;p&gt;Kernel modules are object files used to extend an operating system&amp;rsquo;s&#xA;kernel functionality at &lt;em&gt;run time&lt;/em&gt;.&lt;/p&gt;&#xA;&lt;p&gt;In this post, we’ll look at implementing a simple character device driver as a&#xA;kernel module in NetBSD.&#xA;Once it is loaded, userspace processes will be able to &lt;code&gt;write&lt;/code&gt; an arbitrary byte string to&#xA;the device,&#xA;and on every successive &lt;code&gt;read&lt;/code&gt; expect a cryptographically-secure pseudorandom permutation of&#xA;the original byte string.&lt;/p&gt;&#xA;&lt;p&gt;Before we begin, compiling a kernel module requires the NetBSD source code to live in &lt;code&gt;/usr/src&lt;/code&gt;.&#xA;&lt;a href=&#34;https://www.netbsd.org/docs/guide/en/chap-fetch.html&#34;&gt;This&lt;/a&gt; explains how to&#xA;get that.&lt;/p&gt;</description>
+			</item>
+	</channel>
 </rss>
