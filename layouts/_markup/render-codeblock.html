@@ -1,0 +1,3 @@
+{{- /* Plain, unhighlighted code blocks, as the site has always had.
+       tabindex="0" lets keyboard users scroll long lines. */ -}}
+<pre tabindex="0"><code{{ with .Type }} class="language-{{ . }}"{{ end }}>{{ .Inner }}</code></pre>

@@ -1,12 +1,26 @@
 baseurl = "https://saurvs.github.io/"
 title = "Saurav Sachidanand"
-languageCode = "en-us"
-theme = "meh"
+locale = "en-US"
+theme = "meh-theme"
 
-[Params]
+# List posts under "writing" on the home page.
+mainSections = ["post"]
+
+# The site has never had tag or category pages.
+disableKinds = ["taxonomy", "term"]
+
+[params]
   subtitle = "Y = λf. ( λ☃. f (☃ ☃) ) ( λ☃. f (☃ ☃) )"
+  footerCode = '''
+-[------->+]>.-[->++++]>.-[--->++]>--.-------.+[--->+]>.+[->+++]>.--[--->+
+]>-.---[->++++]>.-----.[--->+]>-----.---[->++++]>+.-------.----------.+.+++++
+++++++++.+.+.+[->+++]>++.+++++++++++++.----------.-[--->+]>-.---[->++++]>.---
+---------.---.--[--->+]>-.--[->++++]>-.--------.+++.------.--------.[->+++]>.
+------------.--[->++++]>+.----------.++++++.-[---->+]>+++.---[->++++]>-.++++[
+->+++]>..[->+++]>-.
+'''
 
-[author]
+  [params.author]
     name = "Saurav Sachidanand"
     email = "sauravsachidanand@gmail.com"
     github = "saurvs"
